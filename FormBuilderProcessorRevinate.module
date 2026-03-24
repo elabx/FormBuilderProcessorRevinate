@@ -89,6 +89,13 @@ class FormBuilderProcessorRevinate extends FormBuilderProcessorAction implements
                 }
             }
 
+            // transform checkbox array values into comma-separated strings
+            foreach ($contactData as $key => $value) {
+                if (is_array($value)) {
+                    $contactData[$key] = implode(', ', $value);
+                }
+            }
+
             // exit if no email is set since it's required
             if(!$contactData['email']) return;
 
@@ -125,8 +132,9 @@ class FormBuilderProcessorRevinate extends FormBuilderProcessorAction implements
 
         $f = $this->modules->get('InputfieldTextarea');
         $f->attr('name', 'revinate_rename');
-        $f->label = 'Rename fields';
-        $f->notes = "Available fields are: email (REQUIRED), first_name ,last_name ,address_1 ,address_2 ,city ,state ,country ,zip ,phone";
+        $f->label = 'Map fields';
+        $f->notes = "Available fields are: email (REQUIRED), first_name ,last_name ,address_1 ,address_2 ,city ,state ,country ,zip ,phone.\nCheckbox fields with multiple selections will be automatically sent as a comma-separated list.";
+        $f->textFormat = Inputfield::textFormatMarkdown;
         $f->description = 'Match fields to valid Revinate fields, enter one per line below in the format: [revinate_name]=[form_field]';
         $f->val($this->get('revinate_rename'));
         $inputfields->add($f);
